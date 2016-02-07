@@ -1,181 +1,168 @@
 package com.borisenkoda.weathertest.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.borisenkoda.weathertest.R;
-import com.borisenkoda.weathertest.databinding.ItemCityLvBinding;
-import com.borisenkoda.weathertest.databinding.ScreenListCityBinding;
+import com.borisenkoda.weathertest.database.tables.CitiesTable;
 import com.borisenkoda.weathertest.helpers.Easy;
 import com.borisenkoda.weathertest.net.City;
 import com.borisenkoda.weathertest.net.CurrentWeather;
-import com.borisenkoda.weathertest.net.ServerApi;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
+
 /**
  * Created by BDA on 31.01.2016.
  */
-public class CityListFragment extends BaseFragment {
-    @Inject
-    ServerApi api;
-    ScreenListCityBinding binding;
-    private AdapterLv adapterLv;
-    private Realm realm;
-    RealmResults<City> citiesRealm;
+public class CityListFragment extends BaseCityListFragment {
 
-    private void initCities() {
-        citiesRealm = realm.where(City.class).findAll();
-        if (citiesRealm.isEmpty()){
-            realm.beginTransaction();
-            realm.copyToRealm(new City(498817,"Санкт-Петербург","Россия"));
-            realm.copyToRealm(new City(524901,"Москва","Россия"));
-            realm.commitTransaction();
-        }
-
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Easy.logsV();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Easy.logsV();
-        realm = Realm.getDefaultInstance();
-        binding = DataBindingUtil.inflate(inflater, R.layout.screen_list_city, container, false);
-        return binding.getRoot();
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Easy.logsV();
-        updateList();
-        binding.lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                api.getCurrentWeather(citiesRealm.get(position).getId())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnUnsubscribe(new Action0() {
-                            @Override
-                            public void call() {
-                                Easy.logD("onUnsubscribe");
-                            }
-                        })
-                        .subscribe(new FragmentSubscription<CurrentWeather>() {
-                            @Override
-                            public void onCompleted() {
-                                Easy.logD("onCompleted");
-                            }
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Easy.logE(e.getMessage());
-                            }
+                final City city = cities.get(position);
+                PopupMenu menu = new PopupMenu(getContext(), view);
+                menu.inflate(R.menu.menu_remove);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int id = item.getItemId();
+                        if (id == R.id.remove) {
+                            removeCity(city);
+                        }
+                        return true;
+                    }
+                });
+                menu.show();
 
-                            @Override
-                            public void onNext(CurrentWeather currentWeather) {
-                                Easy.logD(currentWeather);
-                                City city = new City();
-                                city.setId(currentWeather.id);
-                                city.setName(currentWeather.name);
-                                city.setCountry(currentWeather.sys.country);
-                                city.setWeatherTemp(currentWeather.main.temp);
-                                city.setWeatherDescription(currentWeather.weather.get(0).description);
-                                city.setIcon(currentWeather.weather.get(0).icon);
-                                if (realm!=null){
-                                    realm.beginTransaction();
-                                    realm.copyToRealmOrUpdate(city);
-                                    realm.commitTransaction();
-                                }
-                                updateList();
-                                Toast.makeText(getActivity(), currentWeather.main.temp+"", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                return true;
             }
         });
     }
 
     @Override
-    public void onStart() {
-        Easy.logsV();
+    protected AdapterView.OnItemClickListener getOnItemClickListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final City city = cities.get(position);
+                PopupMenu menu = new PopupMenu(getContext(), view);
+                menu.inflate(R.menu.menu_city);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int id = item.getItemId();
+                        if (id == R.id.action_update) {
+                            updateCity(city);
+                        } else if (id == R.id.action_forecast_3 || id == R.id.action_forecast_7) {
+                            getFragmentStack().push(new ForecastFragment().setCity(city).setCount(id == R.id.action_forecast_3 ? 3 : 7));
+                        }
+                        return true;
+                    }
+                });
+                menu.show();
 
-        super.onStart();
-        realm = Realm.getDefaultInstance();
-        updateList();
+
+            }
+        };
+    }
+
+    private void updateCity(final City city) {
+        api.getCurrentWeatherForId(city.id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnUnsubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        Easy.logD("onUnsubscribe");
+                    }
+                })
+                .subscribe(new ViewSubscription<CurrentWeather>() {
+                    @Override
+                    public void onCompleted() {
+                        Easy.logD("onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Easy.logE(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(CurrentWeather currentWeather) {
+                        Easy.logD(currentWeather);
+                        city.updateFromCurrentWeather(currentWeather);
+                        putCity(city);
+                        updateListView();
+                        Toast.makeText(getContext(), currentWeather.main.temp + "", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
-    public void onStop() {
-        Easy.logsV();
+    protected void initSubscribeCities() {
+        storIOSQLite
+                .get()
+                .listOfObjects(City.class)
+                .withQuery(CitiesTable.QUERY_ALL)
+                .prepare()
+                .asRxObservable()
+                .observeOn(mainThread())
+                .subscribe(new ViewSubscription<List<City>>() {
+                    @Override
+                    public void onCompleted() {
+                        Easy.logD("onCompleted");
+                    }
 
-        super.onStop();
-        realm.close();
+                    @Override
+                    public void onError(Throwable e) {
+                        Easy.logE(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<City> nextCities) {
+                        Easy.logD("cities.size()=" + nextCities.size());
+                        cities.clear();
+                        cities.addAll(nextCities);
+                        if (nextCities.isEmpty()) {
+                            updateCity(new City(498817, "Санкт-Петербург", "Россия"));
+                            updateCity(new City(524901, "Москва", "Россия"));
+                        } else {
+                            updateListView();
+                        }
+                    }
+                });
     }
 
-    private void updateList() {
-        if (citiesRealm==null) initCities();
-        if (binding == null) return;
-        if (binding.lv.getAdapter() == null) {
-            adapterLv = new AdapterLv();
-            binding.lv.setAdapter(adapterLv);
-        } else {
-            adapterLv.notifyDataSetChanged();
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_add, menu);
     }
 
-    private class AdapterLv extends BaseAdapter {
-        @Override
-        public int getCount() {
-            if (citiesRealm == null) return 0;
-            return citiesRealm.size();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_add) {
+            getFragmentStack().push(new CitySearchFragment());
+            return true;
         }
-
-        @Override
-        public Object getItem(int i) {
-            return citiesRealm.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            final ItemCityLvBinding itemBinding;
-            if (view == null) {
-                itemBinding = DataBindingUtil.inflate(LayoutInflater.from(getActivity()), R.layout.item_city_lv, viewGroup, false);
-                view = itemBinding.getRoot();
-                view.setTag(itemBinding);
-            } else {
-                itemBinding = (ItemCityLvBinding) view.getTag();
-            }
-            itemBinding.setCity(citiesRealm.get(i));
-            return view;
-        }
+        return false;
     }
 }

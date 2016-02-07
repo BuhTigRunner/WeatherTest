@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff6f00</color>
     <color name="colorDeactivated">#e0f7fa</color>
+    <color name="t_white">#FFF</color>
 </resources>

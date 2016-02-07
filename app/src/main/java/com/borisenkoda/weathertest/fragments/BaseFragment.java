@@ -5,7 +5,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.borisenkoda.weathertest.activity.MainActivity;
 import com.borisenkoda.weathertest.app.App;
+import com.borisenkoda.weathertest.helpers.Easy;
+import com.borisenkoda.weathertest.helpers.FragmentStack;
 
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
@@ -14,15 +17,15 @@ import rx.subscriptions.CompositeSubscription;
  * Created by BDA on 31.01.2016.
  */
 public class BaseFragment extends Fragment {
-    private CompositeSubscription viewSubscriptions, fragmentSubscriptions;
+    private CompositeSubscription viewSubscriptions;
     {
-        setRetainInstance(true);
+        setRetainInstance(false);
+        super.setArguments(new Bundle());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentSubscriptions = new CompositeSubscription();
         App.inject(this);
     }
 
@@ -33,16 +36,18 @@ public class BaseFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         viewSubscriptions.unsubscribe();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        fragmentSubscriptions.unsubscribe();
-    }
+
 
     private abstract class AutoSubscription<T> extends Subscriber<T> {
 
@@ -53,11 +58,17 @@ public class BaseFragment extends Fragment {
         {
             viewSubscriptions.add(this);
         }
-    }
 
-    protected abstract class FragmentSubscription<T> extends AutoSubscription<T> {
-        {
-            fragmentSubscriptions.add(this);
+        @Override
+        public void onError(Throwable e) {
+            Easy.logE(e.getMessage());
         }
     }
+
+
+
+    public FragmentStack getFragmentStack(){
+        return ((MainActivity) getActivity()).getFragmentStack();
+    }
+
 }
