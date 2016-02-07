@@ -62,7 +62,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            android:text='@{city.weatherTemp+ " \u2103"}'
+            android:text='@{city.weatherTemp!=null ? Math.round(city.weatherTemp)+ " \u2103" : ""}'
             android:textSize="22sp" />
 
 

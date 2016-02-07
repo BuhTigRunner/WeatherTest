@@ -102,13 +102,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_go_www)  {
-            String url = getString(R.string.openweathermap_site);
+        if (id == R.id.nav_go_www || id == R.id.nav_source_github)  {
+            String url = getString(id == R.id.nav_go_www ? R.string.openweathermap_site : R.string.github_site);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
         }
-        binding.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 

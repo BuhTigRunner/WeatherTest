@@ -11,7 +11,6 @@
     <string name="search_hint">Поиск города</string>
     <string name="find">Найти</string>
     <string name="add_city_info">Город сохранен</string>
-    <string name="save">Сохранить</string>
     <string name="add">Добавить</string>
     <string name="update_current">Обновить данные о погоде</string>
     <string name="forecast_3">Прогноз на 3 дня</string>
@@ -25,5 +24,7 @@
     <string name="temp_night">Ночью</string>
     <string name="forecast">Прогноз</string>
     <string name="additionally">Дополнительно</string>
+    <string name="error">Не удалось получить  данные</string>
     <string name="openweathermap_site">http://openweathermap.org/</string>
+    <string name="github_site">https://github.com/BuhTigRunner/WeatherTest</string>
 </resources>

@@ -8,6 +8,10 @@
                 android:id="@+id/nav_go_www"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/openweathermap_site" />
+            <item
+                android:id="@+id/nav_source_github"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/github_site" />
         </menu>
     </item>
 

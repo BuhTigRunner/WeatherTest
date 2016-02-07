@@ -102,6 +102,7 @@ public class CityListFragment extends BaseCityListFragment {
 
                     @Override
                     public void onError(Throwable e) {
+                        super.onError(e);
                         Easy.logE(e.getMessage());
                     }
 

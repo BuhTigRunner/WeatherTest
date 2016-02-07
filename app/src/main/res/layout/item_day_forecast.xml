@@ -61,7 +61,7 @@
             android:layout_below="@+id/tv_title"
             android:layout_toEndOf="@+id/iv_description"
             android:layout_toRightOf="@+id/iv_description"
-            android:text='@{@string/temp_day+": "+list.temp.day+ " \u2103"}'
+            android:text='@{list.temp.day!=null ? @string/temp_day+": "+Math.round(list.temp.day)+ " \u2103" : ""}'
             android:textSize="18sp" />
 
         <TextView
@@ -71,7 +71,7 @@
             android:layout_below="@+id/tv_temp_day"
             android:layout_toEndOf="@+id/iv_description"
             android:layout_toRightOf="@+id/iv_description"
-            android:text='@{@string/temp_night+": "+list.temp.night+ " \u2103"}'
+            android:text='@{list.temp.night!=null ? @string/temp_night+": "+Math.round(list.temp.night)+ " \u2103" : ""}'
             android:textSize="18sp" />
 
 

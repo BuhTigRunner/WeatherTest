@@ -3,6 +3,7 @@ package com.borisenkoda.weathertest.fragments;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -47,9 +49,15 @@ public class ForecastFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (city == null && savedInstanceState != null && savedInstanceState.containsKey("city")) {
-            city = savedInstanceState.getParcelable("city");
+        if (city == null && savedInstanceState != null) {
+            if (savedInstanceState.containsKey("city")) {
+                city = savedInstanceState.getParcelable("city");
+            }
+            if (savedInstanceState.containsKey("count")) {
+                count = savedInstanceState.getInt("count");
+            }
         }
+
 
     }
 
@@ -57,6 +65,7 @@ public class ForecastFragment extends BaseFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("city", city);
+        outState.putInt("count", count);
     }
 
     @Nullable
@@ -75,6 +84,12 @@ public class ForecastFragment extends BaseFragment {
             binding.setCity(city);
         }
         binding.tvForecast.setText(getString(count == 3 ? R.string.forecast_3 : R.string.forecast_7));
+        binding.srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reload();
+            }
+        });
     }
 
     private void reload() {
@@ -83,6 +98,12 @@ public class ForecastFragment extends BaseFragment {
         api.getForecastDaily(city.id, count)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(new Action0() {
+                    @Override
+                    public void call() {
+                        binding.srl.setRefreshing(false);
+                    }
+                })
                 .subscribe(new ViewSubscription<Forecast>() {
                     @Override
                     public void onError(Throwable e) {
@@ -107,6 +128,14 @@ public class ForecastFragment extends BaseFragment {
                         Easy.logD(forecast.list.size());
                     }
                 });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        binding.srl.setRefreshing(false);
+        binding.srl.destroyDrawingCache();
+        binding.srl.clearAnimation();
     }
 
     private void updateCity(City city) {

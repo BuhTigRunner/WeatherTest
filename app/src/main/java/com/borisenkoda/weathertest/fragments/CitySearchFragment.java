@@ -58,6 +58,11 @@ public class CitySearchFragment extends BaseCityListFragment implements SearchVi
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new ViewSubscription<CurrentWeather>() {
                     @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                    }
+
+                    @Override
                     public void onCompleted() {
 
                     }
@@ -102,7 +107,7 @@ public class CitySearchFragment extends BaseCityListFragment implements SearchVi
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 PopupMenu menu = new PopupMenu(getActivity(), view);
-                menu.inflate(R.menu.menu_save);
+                menu.inflate(R.menu.menu_add);
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

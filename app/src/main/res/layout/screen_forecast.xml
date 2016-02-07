@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,34 +10,42 @@
             type="com.borisenkoda.weathertest.net.City" />
     </data>
 
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/item_city_lv"
-                bind:city="@{city}"/>
-
-            <TextView
-                android:id="@+id/tv_forecast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/m_general"
-                android:textSize="18sp"
-                android:layout_gravity="center_horizontal" />
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/ll_forecast"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                bind:list="@{city.forecast == null ? null : city.forecast.list}"/>
-        </LinearLayout>
+                android:orientation="vertical">
 
-    </ScrollView>
+                <include
+                    layout="@layout/item_city_lv"
+                    bind:city="@{city}" />
+
+                <TextView
+                    android:id="@+id/tv_forecast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="@dimen/m_general"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_forecast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    bind:list="@{city.forecast == null ? null : city.forecast.list}" />
+            </LinearLayout>
+
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </layout>

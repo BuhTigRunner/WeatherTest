@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.widget.Toast;
 
+import com.borisenkoda.weathertest.R;
 import com.borisenkoda.weathertest.activity.MainActivity;
 import com.borisenkoda.weathertest.app.App;
 import com.borisenkoda.weathertest.helpers.Easy;
@@ -19,7 +21,7 @@ import rx.subscriptions.CompositeSubscription;
 public class BaseFragment extends Fragment {
     private CompositeSubscription viewSubscriptions;
     {
-        setRetainInstance(false);
+        setRetainInstance(true);
         super.setArguments(new Bundle());
     }
 
@@ -62,6 +64,7 @@ public class BaseFragment extends Fragment {
         @Override
         public void onError(Throwable e) {
             Easy.logE(e.getMessage());
+            Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 

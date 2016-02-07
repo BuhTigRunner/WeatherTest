@@ -28,6 +28,7 @@ public class CitiesTable {
     @NonNull
     public static final Query QUERY_ALL = Query.builder()
             .table(TABLE)
+            .orderBy(NAME)
             .build();
 
     private CitiesTable() {
