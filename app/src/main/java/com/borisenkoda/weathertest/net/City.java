@@ -1,67 +1,32 @@
 package com.borisenkoda.weathertest.net;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.borisenkoda.weathertest.database.tables.CitiesTable;
+import com.borisenkoda.weathertest.helpers.ParcelPacker;
+import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
+import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
 
 /**
  * Created by BDA on 31.01.2016.
  */
-public class City extends RealmObject{
-    @PrimaryKey
-    private int id;
-    private String name;
-    private String country;
-    private String weatherDescription;
-    private Double weatherTemp;
-    private String icon;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getWeatherDescription() {
-        return weatherDescription;
-    }
-
-    public void setWeatherDescription(String weatherDescription) {
-        this.weatherDescription = weatherDescription;
-    }
-
-    public Double getWeatherTemp() {
-        return weatherTemp;
-    }
-
-    public void setWeatherTemp(Double weatherTemp) {
-        this.weatherTemp = weatherTemp;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
+@StorIOSQLiteType(table = "cities")
+public class City implements Parcelable{
+    @StorIOSQLiteColumn(name = CitiesTable.COLUMN_ID, key = true)
+    public int id;
+    @StorIOSQLiteColumn(name = CitiesTable.NAME)
+    public String name;
+    @StorIOSQLiteColumn(name = CitiesTable.COUNTRY)
+    public String country;
+    @StorIOSQLiteColumn(name = CitiesTable.DESCRIPTION_WEATHER)
+    public String weatherDescription;
+    @StorIOSQLiteColumn(name = CitiesTable.WEATHER_TEMP)
+    public Double weatherTemp;
+    @StorIOSQLiteColumn(name = CitiesTable.ICON)
+    public String icon;
+    public Forecast forecast;
 
     public City() {
 
@@ -72,4 +37,32 @@ public class City extends RealmObject{
         this.name = name;
         this.country = country;
     }
+
+    public void updateFromCurrentWeather(CurrentWeather currentWeather) {
+        if (currentWeather == null || currentWeather.id == null) return;
+        id = currentWeather.id;
+        name = currentWeather.name;
+        if (currentWeather.sys != null){
+            country = currentWeather.sys.country;
+        }
+        if (currentWeather.main!=null){
+            weatherTemp = currentWeather.main.temp;
+        }
+        if (currentWeather.weather!=null && currentWeather.weather.size()>0){
+            weatherDescription = currentWeather.weather.get(0).description;
+            icon = currentWeather.weather.get(0).icon;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        ParcelPacker.writeToParcel(parcel, this);
+    }
+
+    public static final Creator<City> CREATOR = ParcelPacker.getCreator(City.class);
 }

@@ -23,7 +23,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            bind:imageIcon="@{city.getIcon}"/>
+            bind:imageIcon="@{city.icon}"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,17 +39,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{city.getName()}" />
+                android:text="@{city.name}" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{city.getCountry()}" />
+                android:text="@{city.country}" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{city.getWeatherDescription()}" />
+                android:text="@{city.weatherDescription}" />
 
         </LinearLayout>
 
@@ -62,7 +62,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            android:text='@{city.getWeatherTemp()+ " \u2103"}'
+            android:text='@{city.weatherTemp+ " \u2103"}'
             android:textSize="22sp" />
 
 

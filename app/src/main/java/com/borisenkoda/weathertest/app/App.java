@@ -4,9 +4,6 @@ import android.app.Application;
 
 import com.borisenkoda.weathertest.helpers.Dagger2Helper;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-
 
 public class App extends Application {
 
@@ -27,9 +24,6 @@ public class App extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
-
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();
-        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
 }

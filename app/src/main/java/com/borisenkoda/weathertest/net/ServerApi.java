@@ -1,6 +1,5 @@
 package com.borisenkoda.weathertest.net;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -15,5 +14,9 @@ public interface ServerApi {
 
     // ---------------------------------------  general  -----------------------------------------
     @GET("weather")
-    Observable<CurrentWeather> getCurrentWeather(@Query("id") int id);
+    Observable<CurrentWeather> getCurrentWeatherForId(@Query("id") int id);
+    @GET("weather")
+    Observable<CurrentWeather> getCurrentWeatherForQ(@Query("q") String query);
+    @GET("forecast/daily")
+    Observable<Forecast> getForecastDaily(@Query("id") int id, @Query("cnt") int count);
 }

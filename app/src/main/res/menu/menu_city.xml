@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_update"
+        android:title="@string/update_current" />
+    <item
+        android:id="@+id/action_forecast_3"
+        android:title="@string/forecast_3" />
+    <item
+        android:id="@+id/action_forecast_7"
+        android:title="@string/forecast_7" />
+</menu>
