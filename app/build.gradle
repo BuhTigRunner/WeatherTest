@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "com.borisenkoda.weathertest"
@@ -27,23 +27,21 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.10.1'
     }
 }
 
-apply plugin: 'android-apt'
 apply plugin: 'com.github.ben-manes.versions'
 
 dependencies {
     compile 'javax.annotation:javax.annotation-api:1.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    apt 'com.google.dagger:dagger-compiler:2.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
     compile 'com.google.dagger:dagger:2.0'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.google.code.gson:gson:2.8.1'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
@@ -54,5 +52,5 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.pushtorefresh.storio:sqlite:1.8.0'
     compile 'com.pushtorefresh.storio:sqlite-annotations:1.8.0'
-    apt 'com.pushtorefresh.storio:sqlite-annotations-processor:1.8.0'
+    annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:1.8.0'
 }
