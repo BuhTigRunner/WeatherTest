@@ -26,6 +26,7 @@ import javax.inject.Inject;
 public class BindingHelper {
     private static BindingHelper instance = new BindingHelper();
     private static HashMap<String, Typeface> hashMapFonts = new HashMap<>();
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d MMMM");
     @Inject
     App app;
 
@@ -38,12 +39,12 @@ public class BindingHelper {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    @BindingAdapter("app:visibility")
+    @BindingAdapter("visibility")
     public static void setVisibilityApp(View view, boolean visible) {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    @BindingAdapter({"bind:imageIcon"})
+    @BindingAdapter({"imageIcon"})
     public static void loadImageIcon(ImageView view, String imageIcon) {
         String res = null;
         if (imageIcon != null && !imageIcon.isEmpty()) {
@@ -52,18 +53,18 @@ public class BindingHelper {
         loadImage(view, res);
     }
 
-    @BindingAdapter({"bind:imageUrl"})
+    @BindingAdapter({"imageUrl"})
     public static void loadImage(ImageView view, String url) {
         loadImage(view, url, null);
     }
 
-    @BindingAdapter({"bind:imageUrl", "bind:placeholder"})
+    @BindingAdapter({"imageUrl", "placeholder"})
     public static void loadImage(ImageView view, String url, Drawable placeholder) {
         if (url != null && url.equals("")) url = null;
         Picasso.with(instance.app.getApplicationContext()).load(url).placeholder(placeholder).fit().centerCrop().into(view);
     }
 
-    @BindingAdapter("bind:list")
+    @BindingAdapter("list")
     public static void inflateLinearLayout(LinearLayout linearLayout, List listObjects) {
         if (linearLayout.getChildCount() > 0) {
             linearLayout.removeAllViews();
@@ -82,7 +83,7 @@ public class BindingHelper {
     private static String getDateAfterNow(int i) {
         Calendar calendar = Calendar.getInstance();
         Date res = new Date(calendar.getTime().getTime()+86400000*i);
-        return new SimpleDateFormat("d MMMM").format(res);
+        return simpleDateFormat.format(res);
     }
 
 }

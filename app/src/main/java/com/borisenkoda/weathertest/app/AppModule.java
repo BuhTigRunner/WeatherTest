@@ -17,15 +17,11 @@ import com.borisenkoda.weathertest.net.Forecast;
 import com.borisenkoda.weathertest.net.ServerApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
-import com.google.gson.reflect.TypeToken;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 
 import javax.inject.Singleton;
 
@@ -37,9 +33,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class AppModule {
